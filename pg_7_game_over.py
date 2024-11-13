@@ -10,33 +10,31 @@ def disp_score():
 
 class Motion:
     def __init__(self):
-        self.displacement = 0
+        self.vertical_displacement = 0  # For vertical (Y-axis) motion due to gravity or jump
+        self.gravity_force = 0.7        # Gravity effect value
+        self.jump_strength = 16         # Strength of the jump
 
-    def motion(self, name, speed, direction, accelerate=0.0):
-        if direction == "x":
-            name.left += speed
-        elif direction == "y":
-            name.bottom -= speed
-        if accelerate:
-            speed += accelerate
-            return speed
+    def apply_gravity(self, rect):
+        # Apply gravity effect on vertical displacement
+        self.vertical_displacement -= self.gravity_force
+        rect.bottom -= self.vertical_displacement
 
-    def gravity(self, rect):
-        self.displacement = self.motion(rect, self.displacement, "y", -0.7)
-        if rect.bottom >= 430:
-            rect.bottom = 430
-            self.displacement = 0
+        # Ensure the player does not fall below ground level
+        if rect.bottom >= ground:
+            rect.bottom = ground
+            self.vertical_displacement = 0
 
     def jump(self, rect):
-        if rect.bottom == 430:
-            self.displacement = 16
+        # Apply upward force if player is on the ground
+        if rect.bottom == ground:
+            self.vertical_displacement = self.jump_strength
 
-    def move_horizontal(self, rect, whereto):
-        if whereto == "left":
-            self.motion(rect, -7, "x")
-        elif whereto == "right":
-            self.motion(rect, 7, "x")
-
+    def move_horizontal(self, rect, direction):
+        # Move left or right on the X-axis
+        if direction == "left":
+            rect.left -= 7
+        elif direction == "right":
+            rect.left += 7
 
 ground = 430
 
@@ -82,7 +80,7 @@ while True:
     # When game is running
     if game_active:
         screen.blit(background_surf, (0, 0))
-        motion.gravity(player_rect)
+        motion.apply_gravity(player_rect)
         if player_rect.colliderect(enemy_rect):
             game_active = False
         motion.move_horizontal(enemy_rect, "left")
