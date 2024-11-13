@@ -46,12 +46,19 @@ clock = pygame.time.Clock()
 
 background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
 score_font = pygame.font.Font(None, 50)
+
 enemy_surf = pygame.Surface((50, 50))
 enemy_surf.fill("black")
 enemy_rect = enemy_surf.get_rect(midbottom=(display_size[0], ground))
+
 player_surf = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
 player_rect = player_surf.get_rect(midbottom=(100, ground))
 
+player_stand = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
+player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_size[1]/2))
+
+st_time = pygame.time.get_ticks()
 game_active = False
 motion = Motion()
 
@@ -91,9 +98,6 @@ while True:
     else:
         # The screen display when the game is not running
         screen.fill((124, 159, 192))
-        player_stand = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
-        player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
-        player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_size[1]/2))
         screen.blit(player_stand, player_stand_rect)
 
     pygame.display.update()
