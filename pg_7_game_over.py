@@ -66,7 +66,6 @@ class Player(Motion):
     def draw(self):
         screen.blit(self.surf, self.rect)
 
-
 pygame.init()
 display_size = (800, 600)
 screen = pygame.display.set_mode(display_size)
@@ -88,6 +87,23 @@ enemy1 = Enemy("black")
 player1 = Player()
 
 while True:
+    # When game is running
+    if game_active:
+        screen.blit(background_surf, (0, 0))
+        player1.draw()
+        player1.apply_gravity(player1.rect)
+        if player1.rect.colliderect(enemy1.rect):
+            game_active = False
+        else:
+            enemy1.move("left")
+            enemy1.draw()
+            disp_score()
+
+    else:
+        # The screen display when the game is not running
+        screen.fill((124, 159, 192))
+        screen.blit(player_stand, player_stand_rect)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -108,23 +124,6 @@ while True:
             enemy1.rect.left = display_size[0]
             player1.rect.left = 100
             st_time = pygame.time.get_ticks()
-
-    # When game is running
-    if game_active:
-        screen.blit(background_surf, (0, 0))
-        player1.draw()
-        player1.apply_gravity(player1.rect)
-        if player1.rect.colliderect(enemy1.rect):
-            game_active = False
-        else:
-            enemy1.move("left")
-            enemy1.draw()
-            disp_score()
-
-    else:
-        # The screen display when the game is not running
-        screen.fill((124, 159, 192))
-        screen.blit(player_stand, player_stand_rect)
 
     pygame.display.update()
     clock.tick(60)
