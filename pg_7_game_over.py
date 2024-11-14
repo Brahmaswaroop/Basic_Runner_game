@@ -1,4 +1,5 @@
 import pygame
+import random
 
 def disp_score():
     # To show the score
@@ -24,9 +25,9 @@ class Motion:
             rect.bottom = ground
             self.vertical_displacement = 0
 
-    def jump(self, rect):
+    def jump(self):
         # Apply upward force if player is on the ground
-        if rect.bottom == ground:
+        if self.rect.bottom == ground:
             self.vertical_displacement = self.jump_strength
 
     def move_horizontal(self, rect, direction):
@@ -36,7 +37,35 @@ class Motion:
         elif direction == "right":
             rect.left += 7
 
-ground = 430
+class Enemy(Motion):
+    def __init__(self, color):
+        super().__init__()
+        self.surf = pygame.Surface((50, 50))
+        self.surf.fill(color)
+        self.rect = self.surf.get_rect(midbottom=(display_size[0], ground))
+        self.speed = 7
+
+    def move(self, direction):
+        super().move_horizontal(self.rect, direction)
+
+    def draw(self):
+        screen.blit(self.surf, self.rect)
+
+class Player(Motion):
+    def __init__(self):
+        super().__init__()
+        self.surf = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
+        self.rect = self.surf.get_rect(midbottom=(100, ground))
+
+    def jump(self):
+        super().jump()
+
+    def move(self, direction):
+        super().move_horizontal(self.rect, direction)
+
+    def draw(self):
+        screen.blit(self.surf, self.rect)
+
 
 pygame.init()
 display_size = (800, 600)
@@ -46,13 +75,7 @@ clock = pygame.time.Clock()
 
 background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
 score_font = pygame.font.Font(None, 50)
-
-enemy_surf = pygame.Surface((50, 50))
-enemy_surf.fill("black")
-enemy_rect = enemy_surf.get_rect(midbottom=(display_size[0], ground))
-
-player_surf = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
-player_rect = player_surf.get_rect(midbottom=(100, ground))
+ground = 430
 
 player_stand = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
@@ -60,7 +83,9 @@ player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_siz
 
 st_time = pygame.time.get_ticks()
 game_active = False
-motion = Motion()
+
+enemy1 = Enemy("black")
+player1 = Player()
 
 while True:
     for event in pygame.event.get():
@@ -72,28 +97,29 @@ while True:
     # Game commands
     if game_active:
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
-            motion.jump(player_rect)
+            player1.jump()
         elif key_states[pygame.K_LEFT]:
-            motion.move_horizontal(player_rect, "left")
+            player1.move("left")
         elif key_states[pygame.K_RIGHT]:
-            motion.move_horizontal(player_rect, "right")
+            player1.move("right")
     else:
         if key_states[pygame.K_SPACE]:
             game_active = True
-            enemy_rect.left = display_size[0]
-            player_rect.left = 100
+            enemy1.rect.left = display_size[0]
+            player1.rect.left = 100
             st_time = pygame.time.get_ticks()
 
     # When game is running
     if game_active:
         screen.blit(background_surf, (0, 0))
-        motion.apply_gravity(player_rect)
-        if player_rect.colliderect(enemy_rect):
+        player1.draw()
+        player1.apply_gravity(player1.rect)
+        if player1.rect.colliderect(enemy1.rect):
             game_active = False
-        motion.move_horizontal(enemy_rect, "left")
-        screen.blit(enemy_surf, enemy_rect)
-        screen.blit(player_surf, player_rect)
-        disp_score()
+        else:
+            enemy1.move("left")
+            enemy1.draw()
+            disp_score()
 
     else:
         # The screen display when the game is not running
