@@ -7,22 +7,26 @@ def disp_score():
     time = pygame.time.get_ticks() - st_time
     score_surf = score_font.render(f"Score: {time//1000}", False, (64, 64, 64))
     score_rect = score_surf.get_rect(center=(400, 50))
-    pygame.draw.rect(screen, (200, 230, 250), score_rect, 20)
+    pygame.draw.rect(screen, (200, 230, 250), score_rect, 0)
     screen.blit(score_surf, score_rect)
 
-def enemy_generator():
-    enemy_colors = ["pink", "black", "red", "blue", "green", "yellow", "orange"]
+def enemy_generator(num_enemies=2):
+    enemy_colors = ['green', 'blue', 'red']
     enemy_direction = [(display_size[0], "left"), (0, "right")]
+    enemies1 = []
 
-    ran_enemy_color = random.choice(enemy_colors)
-    ran_enemy_direction = random.choice(enemy_direction)
+    for enemy1 in range(num_enemies):
+        ran_enemy_color = random.choice(enemy_colors)
+        ran_enemy_direction = random.choice(enemy_direction)
 
-    enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0])
-    enemy1.direction = ran_enemy_direction[1]
-    enemy1.speed = random.randint(4, 15)
-    enemy1.jump_strength = random.randint(10, 20)
-    enemy1.jump_interval = random.uniform(1, 3)
-    return enemy1
+        enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0])
+        enemy1.direction = ran_enemy_direction[1]
+        enemy1.speed = random.randint(4, 15)
+        enemy1.jump_strength = random.randint(10, 20)
+        enemy1.jump_interval = random.uniform(1, 3)
+        enemies1.append(enemy1)
+
+    return enemies1
 
 class Motion:
     def __init__(self):
@@ -110,34 +114,31 @@ st_time = pygame.time.get_ticks()
 game_active = False
 
 player1 = Player()
-enemy = enemy_generator()
+enemies = enemy_generator()
 
 while True:
     # When game is running
     if game_active:
-        # generate new enemies
-        if enemy.default_pos == 0:
-            if enemy.rect.x >= display_size[0]:
-                enemy = enemy_generator()
-        else:
-            if enemy.rect.x <= 0:
-                enemy = enemy_generator()
-
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity(player1.rect)
 
-        # if player collides with enemy game over
-        if player1.rect.colliderect(enemy.rect):
-            game_active = False
-        else:
+    # generate new enemies
+        for enemy in enemies:
             # Enemy movement and jumping
             enemy.move_horizontal(enemy.direction)
             enemy.apply_gravity(enemy.rect)
             enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
             enemy.draw()
+            # if player collides with enemy game over
+            if player1.rect.colliderect(enemy.rect): game_active = False
 
-            disp_score()
+            if ((enemy.direction == 'right' and enemy.rect.left >= display_size[0]) or
+                    (enemy.direction == 'left' and enemy.rect.right <= 0)):
+                enemies.remove(enemy)
+                enemies.append(enemy_generator(1)[0])
+
+        disp_score()
 
 # The screen display when the game is not running
     else:
@@ -160,7 +161,7 @@ while True:
     else:
         if key_states[pygame.K_SPACE]:
             game_active = True
-            enemy.rect.midbottom = (enemy.default_pos, ground)
+            enemies = enemy_generator()
             player1.rect.midbottom = (display_size[0]/2, ground)
             st_time = pygame.time.get_ticks()
             tm.sleep(0.3)
