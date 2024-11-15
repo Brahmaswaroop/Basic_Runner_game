@@ -1,3 +1,5 @@
+from email.policy import default
+
 import pygame
 import random
 import time as tm
@@ -12,15 +14,15 @@ def disp_score():
 
 def enemy_generator():
     enemy_colors = ["pink", "black", "red", "blue", "green", "yellow", "orange"]
-    enemy_positions = [display_size[0], 0]
+    enemy_direction = [(display_size[0], "left"), (0, "right")]
 
     ran_enemy_color = random.choice(enemy_colors)
-    ran_enemy_pos = random.choice(enemy_positions)
+    ran_enemy_direction = random.choice(enemy_direction)
 
-    enemy1 = Enemy(ran_enemy_color)
-    enemy1.default_pos = ran_enemy_pos
+    enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0])
+    enemy1.direction = ran_enemy_direction[1]
+    enemy1.speed = random.randint(4, 20)
     return enemy1
-
 
 class Motion:
     def __init__(self):
@@ -55,13 +57,14 @@ class Motion:
             self.rect.left += 7
 
 class Enemy(Motion):
-    def __init__(self, color):
+    def __init__(self, color, pos):
         super().__init__()
         self.speed = 7
-        self.default_pos = display_size[0]
+        self.default_pos = pos
         self.surf = pygame.Surface((50, 50))
         self.surf.fill(color)
         self.rect = self.surf.get_rect(midbottom=(self.default_pos, ground))
+        self.direction = None
 
     def draw(self):
         screen.blit(self.surf, self.rect)
@@ -70,7 +73,7 @@ class Player(Motion):
     def __init__(self):
         super().__init__()
         self.surf = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
-        self.rect = self.surf.get_rect(midbottom=(100, ground))
+        self.rect = self.surf.get_rect(midbottom=(display_size[0]/2, ground))
 
     def draw(self):
         screen.blit(self.surf, self.rect)
@@ -93,19 +96,26 @@ st_time = pygame.time.get_ticks()
 game_active = False
 
 player1 = Player()
-
+enemy = enemy_generator()
 
 while True:
     # When game is running
     if game_active:
+        if enemy.default_pos == 0:
+            if enemy.rect.x >= display_size[0]:
+                enemy = enemy_generator()
+        else:
+            if enemy.rect.x <= 0:
+                enemy = enemy_generator()
+
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity(player1.rect)
-        if player1.rect.colliderect(enemy_generator().rect):
+        if player1.rect.colliderect(enemy.rect):
             game_active = False
         else:
-            enemy_generator().move_horizontal("left")
-            enemy_generator().draw()
+            enemy.move_horizontal(enemy.direction)
+            enemy.draw()
             disp_score()
 
     else:
@@ -122,7 +132,7 @@ while True:
     # Game commands
     if game_active:
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
-            player1.jump(interval=3)
+            player1.jump()
         elif key_states[pygame.K_LEFT]:
             player1.move_horizontal("left")
         elif key_states[pygame.K_RIGHT]:
@@ -130,8 +140,8 @@ while True:
     else:
         if key_states[pygame.K_SPACE]:
             game_active = True
-            enemy_generator().rect.left = display_size[0]
-            player1.rect.left = 100
+            enemy.rect.midbottom = (enemy.default_pos, ground)
+            player1.rect.midbottom = (display_size[0]/2, ground)
             st_time = pygame.time.get_ticks()
 
     pygame.display.update()
