@@ -20,6 +20,8 @@ def enemy_generator():
     enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0])
     enemy1.direction = ran_enemy_direction[1]
     enemy1.speed = random.randint(4, 15)
+    enemy1.jump_strength = random.randint(10, 20)
+    enemy1.jump_interval = random.uniform(1, 3)
     return enemy1
 
 class Motion:
@@ -64,6 +66,8 @@ class Enemy(Motion):
         self.surf.fill(color)
         self.rect = self.surf.get_rect(midbottom=(self.default_pos, ground))
         self.direction = None
+        self.jump_strength = 0
+        self.jump_interval = 0
 
     def draw(self):
         screen.blit(self.surf, self.rect)
@@ -117,8 +121,12 @@ while True:
         if player1.rect.colliderect(enemy.rect):
             game_active = False
         else:
+            # Enemy movement and jumping
             enemy.move_horizontal(enemy.direction)
+            enemy.apply_gravity(enemy.rect)
+            enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
             enemy.draw()
+
             disp_score()
 
 # The screen display when the game is not running
