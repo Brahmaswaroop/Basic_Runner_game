@@ -46,28 +46,38 @@ class Motion:
         current_time = tm.time()
         # Apply upward force if player is on the ground
         if self.rect.bottom == ground:
+            # check if the time passed after the last jump is more than the interval
             if current_time - self.last_jump_time >= interval:
                 self.vertical_displacement = jump_height
                 self.last_jump_time = current_time
 
-    def move_horizontal(self, direction):
+    def move_horizontal(self, direction, border=False):
         # Move left or right on the X-axis
         if direction == "left":
-            self.rect.left -= self.speed
+            # To prevent the rect to go beyond the window border
+            if border:
+                if self.rect.left >= 0:
+                    self.rect.left -= self.speed
+            else:
+                self.rect.left -= self.speed
         elif direction == "right":
-            self.rect.right += self.speed
+            if border:
+                if self.rect.right <= display_size[0]:
+                    self.rect.right += self.speed
+            else:
+                self.rect.right += self.speed
 
 class Enemy(Motion):
     def __init__(self, color, pos):
         super().__init__()
         self.speed = 7
         self.default_pos = pos
-        self.surf = pygame.Surface((50, 50))
-        self.surf.fill(color)
-        self.rect = self.surf.get_rect(midbottom=(self.default_pos, ground))
         self.direction = None
         self.jump_strength = 0
         self.jump_interval = 0
+        self.surf = pygame.Surface((50, 50))
+        self.surf.fill(color)
+        self.rect = self.surf.get_rect(midbottom=(self.default_pos, ground))
 
     def draw(self):
         screen.blit(self.surf, self.rect)
@@ -139,22 +149,21 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
     key_states = pygame.key.get_pressed()
     if game_active:
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
             player1.jump()
         elif key_states[pygame.K_LEFT]:
-            player1.move_horizontal("left")
+            player1.move_horizontal("left", border=True)
         elif key_states[pygame.K_RIGHT]:
-            player1.move_horizontal("right")
+            player1.move_horizontal("right", border=True)
     else:
         if key_states[pygame.K_SPACE]:
             game_active = True
             enemy.rect.midbottom = (enemy.default_pos, ground)
             player1.rect.midbottom = (display_size[0]/2, ground)
             st_time = pygame.time.get_ticks()
-            tm.sleep(0.2)
+            tm.sleep(0.3)
 
     pygame.display.update()
     clock.tick(60)
