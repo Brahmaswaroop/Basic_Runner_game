@@ -1,5 +1,3 @@
-from email.policy import default
-
 import pygame
 import random
 import time as tm
@@ -21,7 +19,7 @@ def enemy_generator():
 
     enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0])
     enemy1.direction = ran_enemy_direction[1]
-    enemy1.speed = random.randint(4, 20)
+    enemy1.speed = random.randint(4, 15)
     return enemy1
 
 class Motion:
@@ -29,6 +27,7 @@ class Motion:
         self.vertical_displacement = 0  # For vertical (Y-axis) motion due to gravity or jump
         self.gravity_force = 0.7        # Gravity effect value
         self.rect = None
+        self.speed = 5
         self.last_jump_time = 0
 
     def apply_gravity(self, rect):
@@ -52,9 +51,9 @@ class Motion:
     def move_horizontal(self, direction):
         # Move left or right on the X-axis
         if direction == "left":
-            self.rect.left -= 7
+            self.rect.left -= self.speed
         elif direction == "right":
-            self.rect.left += 7
+            self.rect.right += self.speed
 
 class Enemy(Motion):
     def __init__(self, color, pos):
@@ -72,6 +71,7 @@ class Enemy(Motion):
 class Player(Motion):
     def __init__(self):
         super().__init__()
+        self.speed = 7
         self.surf = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
         self.rect = self.surf.get_rect(midbottom=(display_size[0]/2, ground))
 
@@ -79,14 +79,14 @@ class Player(Motion):
         screen.blit(self.surf, self.rect)
 
 pygame.init()
-display_size = (800, 600)
+display_size = (1440, 720)
 screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
 background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
 score_font = pygame.font.Font(None, 50)
-ground = 430
+ground = 520
 
 player_stand = pygame.image.load("game_files/char1-removebg-preview.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
@@ -101,6 +101,7 @@ enemy = enemy_generator()
 while True:
     # When game is running
     if game_active:
+        # generate new enemies
         if enemy.default_pos == 0:
             if enemy.rect.x >= display_size[0]:
                 enemy = enemy_generator()
@@ -111,6 +112,8 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity(player1.rect)
+
+        # if player collides with enemy game over
         if player1.rect.colliderect(enemy.rect):
             game_active = False
         else:
@@ -118,18 +121,18 @@ while True:
             enemy.draw()
             disp_score()
 
+# The screen display when the game is not running
     else:
-        # The screen display when the game is not running
         screen.fill((124, 159, 192))
         screen.blit(player_stand, player_stand_rect)
 
+# Game commands
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
 
     key_states = pygame.key.get_pressed()
-    # Game commands
     if game_active:
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
             player1.jump()
@@ -143,6 +146,7 @@ while True:
             enemy.rect.midbottom = (enemy.default_pos, ground)
             player1.rect.midbottom = (display_size[0]/2, ground)
             st_time = pygame.time.get_ticks()
+            tm.sleep(0.2)
 
     pygame.display.update()
     clock.tick(60)
