@@ -117,40 +117,54 @@ player1 = Player()
 enemies = enemy_generator()
 
 while True:
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+
+    key_states = pygame.key.get_pressed()
+
     # When game is running
     if game_active:
+        # Drawing background and character
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity(player1.rect)
 
-    # generate new enemies
+    # Processing enemies
         for enemy in enemies:
             # Enemy movement and jumping
             enemy.move_horizontal(enemy.direction)
             enemy.apply_gravity(enemy.rect)
             enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
             enemy.draw()
-            # if player collides with enemy game over
-            if player1.rect.colliderect(enemy.rect): game_active = False
 
-            if ((enemy.direction == 'right' and enemy.rect.left >= display_size[0]) or
-                    (enemy.direction == 'left' and enemy.rect.right <= 0)):
+            # Check for collisions
+            if player1.rect.colliderect(enemy.rect):
+                game_active = False
+
+            # Recycle enemies if they leave the screen
+            if (enemy.direction == 'right' and enemy.rect.left >= display_size[0]) or \
+                    (enemy.direction == 'left' and enemy.rect.right <= 0):
                 enemies.remove(enemy)
                 enemies.append(enemy_generator(1)[0])
 
         disp_score()
 
-# The screen display when the game is not running
+    # Game over screen
     else:
         screen.fill((124, 159, 192))
         screen.blit(player_stand, player_stand_rect)
 
-# Game commands
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-    key_states = pygame.key.get_pressed()
+        if key_states[pygame.K_SPACE]:
+            game_active = True
+            enemies = enemy_generator()
+            player1.rect.midbottom = (display_size[0]/2, ground)
+            st_time = pygame.time.get_ticks()
+            tm.sleep(0.3)
+
+    # Player controls when game is active
     if game_active:
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
             player1.jump()
@@ -158,13 +172,6 @@ while True:
             player1.move_horizontal("left", border=True)
         elif key_states[pygame.K_RIGHT]:
             player1.move_horizontal("right", border=True)
-    else:
-        if key_states[pygame.K_SPACE]:
-            game_active = True
-            enemies = enemy_generator()
-            player1.rect.midbottom = (display_size[0]/2, ground)
-            st_time = pygame.time.get_ticks()
-            tm.sleep(0.3)
 
     pygame.display.update()
     clock.tick(60)
