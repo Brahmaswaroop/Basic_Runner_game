@@ -1,9 +1,9 @@
-from motion import Motion
+from .motion import Motion
 import pygame
 
 class Player(Motion):
     def __init__(self, display_size, ground):
-        super().__init__()
+        super().__init__(ground)
         self.speed = 7
         try:
             self.surf = pygame.image.load("game_files/charSkin1.png").convert_alpha()

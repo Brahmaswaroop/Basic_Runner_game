@@ -1,9 +1,9 @@
-from motion import Motion
+from .motion import Motion
 import pygame
 
 class Enemy(Motion):
     def __init__(self, color, pos, ground):
-        super().__init__()
+        super().__init__(ground)
         self.speed = 7
         self.default_pos = pos
         self.direction = None
