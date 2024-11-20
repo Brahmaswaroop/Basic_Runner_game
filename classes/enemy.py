@@ -2,11 +2,11 @@ from .motion import Motion
 import random
 import pygame
 
-class Enemy(Motion):
-    def __init__(self, color, pos, ground):
-        super().__init__(ground)
+class _Enemy(Motion):
+    def __init__(self, color, spawn_position:tuple):
+        super().__init__(spawn_position[1])
         self.speed = 7
-        self.default_pos = pos
+        self.default_pos = spawn_position
         self.direction = None
         self.jump_strength = 0
         self.jump_interval = 0
@@ -15,44 +15,56 @@ class Enemy(Motion):
         except FileNotFoundError:
             self.surf = pygame.Surface((50, 50))
             self.surf.fill(color)
-        self.rect = self.surf.get_rect(midbottom=(self.default_pos, ground))
+        self.rect = self.surf.get_rect(midbottom=(self.default_pos[0], self.default_pos[1]))
 
     def draw(self, screen):
         screen.blit(self.surf, self.rect)
 
-def enemy_generator(num_enemies=1):
-    enemy_colors = ['green', 'blue', 'red']
-    enemy_direction = [(display_size[0], "left"), (0, "right")]
-    enemies1 = []
+class Enemy_processing:
+    def __init__(self, screen, display_size:tuple, ground_pos):
+        self.screen = screen
+        self.display_size = display_size
+        self.ground_pos = ground_pos
 
-    for enemy1 in range(num_enemies):
-        ran_enemy_color = random.choice(enemy_colors)
-        ran_enemy_direction = random.choice(enemy_direction)
+    def __enemy_generator(self, num_of_enemies):
+        enemy_skins = ['green', 'blue', 'red']
+        enemy_pos_direction = [(0, "right"), (self.display_size[0], "left")]
+        enemy_list = []
 
-        enemy1 = Enemy(ran_enemy_color, ran_enemy_direction[0], ground)
-        enemy1.direction = ran_enemy_direction[1]
-        enemy1.speed = random.randint(4, 15)
-        enemy1.jump_strength = random.randint(10, 20)
-        enemy1.jump_interval = random.uniform(1, 3)
-        enemies1.append(enemy1)
+        for enmy in range(num_of_enemies):
+            ran_enemy_color = random.choice(enemy_skins)
+            ran_enemy_direction = random.choice(enemy_pos_direction)
 
-    return enemies1
+            enmy = _Enemy(ran_enemy_color, ran_enemy_direction[0])
+            enmy.direction = ran_enemy_direction[1]
+            enmy.speed = random.randint(4, 15)
+            enmy.jump_strength = random.randint(10, 20)
+            enmy.jump_interval = random.uniform(1, 3)
+            enemy_list.append(enmy)
 
-def enemy_processing(self, enemies):
-    # Processing enemies
-    for enemy in enemies:
-        # Enemy movement and jumping
-        enemy.move_horizontal(enemy.direction)
-        enemy.apply_gravity(enemy.rect)
-        enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
-        enemy.draw(screen)
+        return enemy_list
 
-        # Check for collisions
-        if player1.rect.colliderect(enemy.rect):
-            game_active = False
+    def __enemy_movement(self, enemies:list, player_rect):
+        # Processing enemies
+        for enemy in enemies:
+            # Enemy movement and jumping
+            enemy.move_horizontal(enemy.direction)
+            enemy.apply_gravity(enemy.rect)
+            enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
+            enemy.draw(self.screen)
 
-        # Recycle enemies if they leave the screen
-        if (enemy.direction == 'right' and enemy.rect.left >= display_size[0]) or \
-                (enemy.direction == 'left' and enemy.rect.right <= 0):
-            enemies.remove(enemy)
-            enemies.append(enemy_generator(1)[0])
+            # Recycle enemies if they leave the screen
+            if (enemy.direction == 'right' and enemy.rect.left >= self.display_size[0]) or \
+                    (enemy.direction == 'left' and enemy.rect.right <= 0):
+                enemies.remove(enemy)
+                enemies.append(self.__enemy_generator(1)[0])
+
+            # Check for collisions
+            if player_rect.colliderect(enemy.rect):
+                return False
+        return True
+    
+    def enemy_implementer(self, num_of_enemies:int=1, player_rect=None, game_status=False):
+        enemies = self.__enemy_generator(num_of_enemies)
+        game_status = self.__enemy_movement(enemies, player_rect)
+    

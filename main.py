@@ -1,34 +1,26 @@
 import pygame
-import random
-from classes.enemy import Enemy
+from classes.enemy import Enemy_processing
 from classes.player import Player
-
-def disp_score():
-    # To show the score
-    time = pygame.time.get_ticks() - st_time
-    score_surf = score_font.render(f"Score: {time//1000}", False, (64, 64, 64))
-    score_rect = score_surf.get_rect(center=(400, 50))
-    pygame.draw.rect(screen, (0, 230, 250), score_rect, 0)
-    screen.blit(score_surf, score_rect)
+from classes.game_texts import disp_score
 
 pygame.init()
-screen = pygame.display.set_mode((400, 300), pygame.FULLSCREEN)
+display_size = [1024,512]
+screen = pygame.display.set_mode((display_size), pygame.RESIZABLE)
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 ground = 520
 
-background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
-score_font = pygame.font.Font(None, 50)
+background_surf = pygame.image.load(".game_files/back3.jpg").convert_alpha()
 
 player_stand = pygame.image.load("game_files/charSkin1.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
 player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_size[1]/2))
 
-st_time = pygame.time.get_ticks()
+start_time = pygame.time.get_ticks()
 game_active = False
 
 player1 = Player(display_size, ground)
-enemies = enemy_generator()
+enemies = Enemy_processing(screen, display_size, ground)
 
 while True:
     # Event handling
@@ -45,8 +37,8 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw(screen)
         player1.apply_gravity(player1.rect)
-
-        disp_score()
+        enemies.enemy_implementer(1, player1.rect)
+        disp_score(screen, start_time)
 
     # Game over screen
     else:
@@ -58,7 +50,6 @@ while True:
             player1.rect.midbottom = (display_size[0]/2, ground)
             pygame.display.update()
             st_time = pygame.time.get_ticks()
-            enemies = enemy_generator()
 
     # Player controls when game is active
     if game_active:
