@@ -26,7 +26,7 @@ class Enemy_processing:
         self.display_size = display_size
         self.ground_pos = ground_pos
 
-    def __enemy_generator(self, num_of_enemies):
+    def enemy_generator(self, num_of_enemies):
         enemy_skins = ['green', 'blue', 'red']
         enemy_pos_direction = [(0, "right"), (self.display_size[0], "left")]
         enemy_list = []
@@ -35,7 +35,7 @@ class Enemy_processing:
             ran_enemy_color = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
 
-            enmy = _Enemy(ran_enemy_color, ran_enemy_direction[0])
+            enmy = _Enemy(ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
             enmy.direction = ran_enemy_direction[1]
             enmy.speed = random.randint(4, 15)
             enmy.jump_strength = random.randint(10, 20)
@@ -44,7 +44,7 @@ class Enemy_processing:
 
         return enemy_list
 
-    def __enemy_movement(self, enemies:list, player_rect):
+    def enemy_movement(self, enemies:list, player_rect):
         # Processing enemies
         for enemy in enemies:
             # Enemy movement and jumping
@@ -57,14 +57,11 @@ class Enemy_processing:
             if (enemy.direction == 'right' and enemy.rect.left >= self.display_size[0]) or \
                     (enemy.direction == 'left' and enemy.rect.right <= 0):
                 enemies.remove(enemy)
-                enemies.append(self.__enemy_generator(1)[0])
+                enemies.append(self.enemy_generator(1)[0])
 
             # Check for collisions
             if player_rect.colliderect(enemy.rect):
                 return False
         return True
     
-    def enemy_implementer(self, num_of_enemies:int=1, player_rect=None, game_status=False):
-        enemies = self.__enemy_generator(num_of_enemies)
-        game_status = self.__enemy_movement(enemies, player_rect)
     

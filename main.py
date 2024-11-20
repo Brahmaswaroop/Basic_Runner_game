@@ -4,13 +4,13 @@ from classes.player import Player
 from classes.game_texts import disp_score
 
 pygame.init()
-display_size = [1024,512]
-screen = pygame.display.set_mode((display_size), pygame.RESIZABLE)
+display_size = (1024, 512)
+screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 ground = 520
 
-background_surf = pygame.image.load(".game_files/back3.jpg").convert_alpha()
+background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
 
 player_stand = pygame.image.load("game_files/charSkin1.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
@@ -20,7 +20,8 @@ start_time = pygame.time.get_ticks()
 game_active = False
 
 player1 = Player(display_size, ground)
-enemies = Enemy_processing(screen, display_size, ground)
+enemy_processor = Enemy_processing(screen, display_size, ground)
+enemies = enemy_processor.enemy_generator(1)
 
 while True:
     # Event handling
@@ -37,7 +38,7 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw(screen)
         player1.apply_gravity(player1.rect)
-        enemies.enemy_implementer(1, player1.rect)
+        game_active = enemy_processor.enemy_movement(enemies, player1.rect)
         disp_score(screen, start_time)
 
     # Game over screen
