@@ -3,8 +3,9 @@ import random
 import pygame
 
 class _Enemy(Motion):
-    def __init__(self, color, spawn_position:tuple):
+    def __init__(self, screen, color, spawn_position:tuple):
         super().__init__(spawn_position[1])
+        self.screen = screen
         self.speed = 7
         self.default_pos = spawn_position
         self.direction = None
@@ -17,13 +18,13 @@ class _Enemy(Motion):
             self.surf.fill(color)
         self.rect = self.surf.get_rect(midbottom=(self.default_pos[0], self.default_pos[1]))
 
-    def draw(self, screen):
-        screen.blit(self.surf, self.rect)
+    def draw(self):
+        self.screen.blit(self.surf, self.rect)
 
 class Enemy_processing:
-    def __init__(self, screen, display_size:tuple, ground_pos):
+    def __init__(self, screen, ground_pos):
         self.screen = screen
-        self.display_size = display_size
+        self.display_size = screen.get_size()
         self.ground_pos = ground_pos
 
     def enemy_generator(self, num_of_enemies):
@@ -35,7 +36,7 @@ class Enemy_processing:
             ran_enemy_color = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
 
-            enmy = _Enemy(ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
+            enmy = _Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
             enmy.direction = ran_enemy_direction[1]
             enmy.speed = random.randint(4, 15)
             enmy.jump_strength = random.randint(10, 20)
@@ -61,9 +62,9 @@ class Enemy_processing:
         for enemy in enemies:
             # Enemy actions: movement, gravity, jumping
             enemy.move_horizontal(enemy.direction)
-            enemy.apply_gravity(enemy.rect)
+            enemy.apply_gravity()
             enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
-            enemy.draw(self.screen)
+            enemy.draw()
 
             # Check for collisions with the player
             if player_rect.colliderect(enemy.rect):

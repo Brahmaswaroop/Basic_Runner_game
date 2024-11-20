@@ -19,8 +19,8 @@ player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_siz
 start_time = pygame.time.get_ticks()
 game_active = False
 
-player1 = Player(display_size, ground)
-enemy_processor = Enemy_processing(screen, display_size, ground)
+player1 = Player(screen, ground)
+enemy_processor = Enemy_processing(screen, ground)
 enemies = enemy_processor.enemy_generator(1)
 
 while True:
@@ -36,8 +36,8 @@ while True:
     if game_active:
         # Drawing background and character
         screen.blit(background_surf, (0, 0))
-        player1.draw(screen)
-        player1.apply_gravity(player1.rect)
+        player1.draw()
+        player1.apply_gravity()
         enemy_processor.enemy_movement(enemies, player1.rect)
         disp_score(screen, start_time)
 
