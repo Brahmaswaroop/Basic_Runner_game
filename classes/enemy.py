@@ -44,24 +44,42 @@ class Enemy_processing:
 
         return enemy_list
 
-    def enemy_movement(self, enemies:list, player_rect):
-        # Processing enemies
+    def enemy_movement(self, enemies: list, player_rect):
+        """
+        Processes enemy movement, recycling, and collision detection.
+        
+        Args:
+            enemies (list): List of active enemy objects.
+            player_rect (pygame.Rect): Player's rectangle for collision checking.
+        
+        Returns:
+            bool: False if a collision occurs with the player; True otherwise.
+        """
+        remaining_enemies = []  # To track enemies still on-screen
+        collision_detected = False
+
         for enemy in enemies:
-            # Enemy movement and jumping
+            # Enemy actions: movement, gravity, jumping
             enemy.move_horizontal(enemy.direction)
             enemy.apply_gravity(enemy.rect)
             enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
             enemy.draw(self.screen)
 
-            # Recycle enemies if they leave the screen
-            if (enemy.direction == 'right' and enemy.rect.left >= self.display_size[0]) or \
-                    (enemy.direction == 'left' and enemy.rect.right <= 0):
-                enemies.remove(enemy)
-                enemies.append(self.enemy_generator(1)[0])
-
-            # Check for collisions
+            # Check for collisions with the player
             if player_rect.colliderect(enemy.rect):
-                return False
-        return True
+                collision_detected = True
+
+            # Recycle enemy if it leaves the screen; otherwise, keep it
+            if (enemy.direction == 'right' and enemy.rect.left >= self.display_size[0]) or \
+            (enemy.direction == 'left' and enemy.rect.right <= 0):
+                # Replace with a new enemy
+                remaining_enemies.append(self.enemy_generator(1)[0])
+            else:
+                remaining_enemies.append(enemy)
+
+        # Update the original enemy list
+        enemies[:] = remaining_enemies
+
+        return not collision_detected
     
     

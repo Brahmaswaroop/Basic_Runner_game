@@ -4,7 +4,7 @@ from classes.player import Player
 from classes.game_texts import disp_score
 
 pygame.init()
-display_size = (1024, 512)
+display_size = (1440, 720)
 screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
@@ -38,7 +38,7 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw(screen)
         player1.apply_gravity(player1.rect)
-        game_active = enemy_processor.enemy_movement(enemies, player1.rect)
+        enemy_processor.enemy_movement(enemies, player1.rect)
         disp_score(screen, start_time)
 
     # Game over screen
@@ -49,8 +49,8 @@ while True:
         if key_states[pygame.K_SPACE]:
             game_active = True
             player1.rect.midbottom = (display_size[0]/2, ground)
-            pygame.display.update()
-            st_time = pygame.time.get_ticks()
+            enemies = enemy_processor.enemy_generator(1)
+            start_time = pygame.time.get_ticks()
 
     # Player controls when game is active
     if game_active:
