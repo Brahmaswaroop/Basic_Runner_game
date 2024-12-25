@@ -13,7 +13,6 @@ class Player(Motion):
             self.surf.fill("black")
 
         self.rect = self.surf.get_rect(midbottom=(screen.get_size()[0]/2, ground))
-        self.rect.move()
 
     def draw(self):
         self.screen.blit(self.surf, self.rect)
