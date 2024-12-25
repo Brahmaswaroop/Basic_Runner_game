@@ -11,7 +11,6 @@ class Player(Motion):
         except FileNotFoundError:
             self.surf = pygame.Surface((100, 100))
             self.surf.fill("black")
-
         self.rect = self.surf.get_rect(midbottom=(screen.get_size()[0]/2, ground))
 
     def draw(self):
