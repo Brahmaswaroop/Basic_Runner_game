@@ -22,14 +22,12 @@ class Motion:
             self.vertical_displacement = 0
 
     def jump(self, interval=0, jump_height=16):
-        current_time = tm.time()
-        # Apply upward force if player is on the ground
-        if self.rect.bottom == self.ground:
-            # check if the time passed after the last jump is more than the interval
-            if current_time - self.last_jump_time >= interval:
-                self.vertical_displacement = jump_height
-                self.rect.bottom -= self.vertical_displacement
-                self.last_jump_time = current_time
+        # Check if player is on the ground and can jump
+        if self.rect.bottom == self.ground and tm.time() - self.last_jump_time >= interval:
+            self.vertical_displacement = jump_height
+            self.rect.bottom -= self.vertical_displacement
+            self.last_jump_time = tm.time()
+
 
     def move_horizontal(self, direction, border=False):
         # To prevent the rect to go beyond the window border
