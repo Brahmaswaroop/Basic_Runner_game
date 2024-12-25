@@ -1,3 +1,16 @@
+'''
+This module is associated with the enemy of the game.
+It includes:
+
+Enemy sprite creation is done using the Enemy class.
+
+Enemy processing class have functions to interact with the enemy rect like:
+Enemy generator to generate n number of enemies.
+Enemy Movement is used to make the rect move.
+
+'''
+
+
 from .motion import Motion
 import random
 import pygame
