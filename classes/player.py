@@ -7,7 +7,7 @@ class Player(Motion):
         self.speed = 7
         self.screen = screen
         try:
-            self.surf = pygame.image.load("game_files/charSkin1.png").convert_alpha()
+            self.surf = pygame.image.load("game_files/Character_skins/charSkin1.png").convert_alpha()
         except FileNotFoundError:
             self.surf = pygame.Surface((100, 100))
             self.surf.fill("black")

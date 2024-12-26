@@ -1,17 +1,30 @@
 {
   "easy": {
-    "enemy_speed": 2,
-    "enemy_spawn_rate": 3,
-    "enemy_count": 5
+    "enemy_max_speed": 6,
+    "enemy_spec_incrementer": 1,
+    "enemy_jump_strength": 5,
+    "enemy_jump_rate": 3,
+    "enemy_count": 1
   },
   "medium": {
-    "enemy_speed": 4,
-    "enemy_spawn_rate": 2,
-    "enemy_count": 8
+    "enemy_max_speed": 11,
+    "enemy_spec_incrementer": 2,
+    "enemy_jump_strength": 10,
+    "enemy_jump_rate": 2,
+    "enemy_count": 1
   },
   "hard": {
-    "enemy_speed": 6,
-    "enemy_spawn_rate": 1,
-    "enemy_count": 12
+    "enemy_max_speed": 16,
+    "enemy_spec_incrementer": 3,
+    "enemy_jump_strength": 15,
+    "enemy_jump_rate": 1,
+    "enemy_count": 2
+  },
+  "impossible": {
+    "enemy_max_speed": 21,
+    "enemy_spec_incrementer": 4,
+    "enemy_jump_strength": 20,
+    "enemy_jump_rate": 1,
+    "enemy_count": 3
   }
 }

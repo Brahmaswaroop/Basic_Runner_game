@@ -1,14 +1,18 @@
 import pygame
+from .level_loader import load_level_data
 
-def build_main_menu(screen, display_size, game_active, alpha_val):
+
+def build_main_menu(screen, display_size, game_active, alpha_val=0):
     # Create a transparent surface for the main menu
     main_menu_surface = pygame.Surface(display_size, pygame.SRCALPHA)
     main_menu_surface_rect = main_menu_surface.get_rect()
+    difficulty = "medium"
 
     if not game_active:
         # Load player sprite with error handling
         try:
-            start_menu_surf = pygame.image.load("./game_files/start_menu_background.png").convert_alpha()
+            start_menu_surf = pygame.image.load(
+                "./game_files/Stage_backgrounds/start_menu_background.png").convert_alpha()
             start_menu_surf = pygame.transform.smoothscale(start_menu_surf, display_size)
             start_menu_surf.set_alpha(alpha_val)
         except pygame.error as e:
@@ -40,4 +44,4 @@ def build_main_menu(screen, display_size, game_active, alpha_val):
         alpha_val = 0  # Reset alpha when the game becomes active
 
     # Return updated alpha value
-    return alpha_val
+    return alpha_val, load_level_data(difficulty)
