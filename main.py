@@ -49,7 +49,7 @@ while True:
         elif key_states[pygame.K_RIGHT]:
             player1.move_horizontal("right", border=True)
 
-        # Game over screen
+    # Game over screen
     else:
         if key_states[pygame.K_SPACE]:
             game_active = True
