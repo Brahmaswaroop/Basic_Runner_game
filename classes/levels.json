@@ -1,0 +1,17 @@
+{
+  "easy": {
+    "enemy_speed": 2,
+    "enemy_spawn_rate": 3,
+    "enemy_count": 5
+  },
+  "medium": {
+    "enemy_speed": 4,
+    "enemy_spawn_rate": 2,
+    "enemy_count": 8
+  },
+  "hard": {
+    "enemy_speed": 6,
+    "enemy_spawn_rate": 1,
+    "enemy_count": 12
+  }
+}

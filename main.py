@@ -1,7 +1,8 @@
 import pygame
-from classes.enemy import Enemy_processing
+from classes.enemy import EnemyProcessing
 from classes.player import Player
 from classes.game_texts import disp_score
+from classes.main_menu import build_main_menu
 
 pygame.init()
 display_size = (1440, 720)
@@ -11,17 +12,13 @@ clock = pygame.time.Clock()
 ground = 520
 
 background_surf = pygame.image.load("game_files/back3.jpg").convert_alpha()
-
-player_stand = pygame.image.load("game_files/charSkin1.png").convert_alpha()
-player_stand = pygame.transform.rotozoom(player_stand, 0, 1.5)
-player_stand_rect = player_stand.get_rect(center=(display_size[0]/2, display_size[1]/2))
-
 start_time = pygame.time.get_ticks()
 game_active = False
+alpha_val = 0
 
 player1 = Player(screen, ground)
-enemy_processor = Enemy_processing(screen, ground)
-enemies = enemy_processor.enemy_generator(1)
+enemy_processor = EnemyProcessing(screen, ground)
+enemies = enemy_processor.enemy_generator()
 
 while True:
     # Event handling
@@ -31,6 +28,7 @@ while True:
             exit()
 
     key_states = pygame.key.get_pressed()
+    alpha_val = build_main_menu(screen, display_size, game_active, alpha_val)
 
     # When game is running
     if game_active:
@@ -38,19 +36,9 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity()
-        enemy_processor.enemy_movement(enemies, player1.rect)
+        enemy_processor.enemy_movement(enemies)
+        game_active = enemy_processor.collision_detected(enemies, player1.rect)
         disp_score(screen, start_time)
-
-    # Game over screen
-    else:
-        screen.fill((124, 159, 192))
-        screen.blit(player_stand, player_stand_rect)
-
-        if key_states[pygame.K_SPACE]:
-            game_active = True
-            player1.rect.midbottom = (display_size[0]/2, ground)
-            enemies = enemy_processor.enemy_generator(1)
-            start_time = pygame.time.get_ticks()
 
     # Player controls when game is active
     if game_active:
@@ -60,6 +48,14 @@ while True:
             player1.move_horizontal("left", border=True)
         elif key_states[pygame.K_RIGHT]:
             player1.move_horizontal("right", border=True)
+
+        # Game over screen
+    else:
+        if key_states[pygame.K_SPACE]:
+            game_active = True
+            player1.rect.midbottom = (display_size[0]/2, ground)
+            enemies = enemy_processor.enemy_generator(1)
+            start_time = pygame.time.get_ticks()
 
     pygame.display.update()
     clock.tick(60)

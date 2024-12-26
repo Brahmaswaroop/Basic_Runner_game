@@ -1,4 +1,4 @@
-'''
+"""
 This module is associated with the enemy of the game.
 It includes:
 
@@ -7,16 +7,14 @@ Enemy sprite creation is done using the Enemy class.
 Enemy processing class have functions to interact with the enemy rect like:
 Enemy generator to generate n number of enemies.
 Enemy Movement is used to make the rect move.
-
-'''
-
+"""
 
 from .motion import Motion
 import random
 import pygame
 
 class _Enemy(Motion):
-    def __init__(self, screen, color, spawn_position:tuple):
+    def __init__(self, screen, color, spawn_position: tuple):
         super().__init__(spawn_position[1])
         self.screen = screen
         self.speed = 7
@@ -34,43 +32,56 @@ class _Enemy(Motion):
     def draw(self):
         self.screen.blit(self.surf, self.rect)
 
-class Enemy_processing:
+
+class EnemyProcessing:
     def __init__(self, screen, ground_pos):
         self.screen = screen
         self.display_size = screen.get_size()
         self.ground_pos = ground_pos
 
-    def enemy_generator(self, num_of_enemies):
+    def enemy_generator(self, num_of_enemies=1):
         enemy_skins = ['green', 'blue', 'red']
         enemy_pos_direction = [(0, "right"), (self.display_size[0], "left")]
         enemy_list = []
 
-        for enmy in range(num_of_enemies):
+        for enemy in range(num_of_enemies):
             ran_enemy_color = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
 
-            enmy = _Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
-            enmy.direction = ran_enemy_direction[1]
-            enmy.speed = random.randint(4, 15)
-            enmy.jump_strength = random.randint(10, 20)
-            enmy.jump_interval = random.uniform(1, 3)
-            enemy_list.append(enmy)
+            enemy = _Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
+            enemy.direction = ran_enemy_direction[1]
+            enemy.speed = random.randint(4, 15)
+            enemy.jump_strength = random.randint(10, 20)
+            enemy.jump_interval = random.uniform(1, 3)
+            enemy_list.append(enemy)
 
         return enemy_list
 
-    def enemy_movement(self, enemies: list, player_rect):
+    def collision_detected(self, enemies: list, player_rect):
         """
-        Processes enemy movement, recycling, and collision detection.
+        Process enemy collisions
+                    enemies
+        :param enemies : List of active enemy objects.
+        :param player_rect : Player's rectangle for collision checking.:
+        :return bool: False if a collision occurs with the player; True otherwise.
+        """
+        collision_detected = False
+        for enemy in enemies:
+            # Check for collisions with the player
+            if player_rect.colliderect(enemy.rect):
+                collision_detected = True
+
+        return not collision_detected
+
+    def enemy_movement(self, enemies: list):
+        """
+        Processes enemy movement and recycling.
         
         Args:
             enemies (list): List of active enemy objects.
-            player_rect (pygame.Rect): Player's rectangle for collision checking.
-        
-        Returns:
-            bool: False if a collision occurs with the player; True otherwise.
+
         """
         remaining_enemies = []  # To track enemies still on-screen
-        collision_detected = False
 
         for enemy in enemies:
             # Enemy actions: movement, gravity, jumping
@@ -79,13 +90,9 @@ class Enemy_processing:
             enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
             enemy.draw()
 
-            # Check for collisions with the player
-            if player_rect.colliderect(enemy.rect):
-                collision_detected = True
-
             # Recycle enemy if it leaves the screen; otherwise, keep it
             if (enemy.direction == 'right' and enemy.rect.left >= self.display_size[0]) or \
-            (enemy.direction == 'left' and enemy.rect.right <= 0):
+                    (enemy.direction == 'left' and enemy.rect.right <= 0):
                 # Replace with a new enemy
                 remaining_enemies.append(self.enemy_generator(1)[0])
             else:
@@ -93,7 +100,3 @@ class Enemy_processing:
 
         # Update the original enemy list
         enemies[:] = remaining_enemies
-
-        return not collision_detected
-    
-    
