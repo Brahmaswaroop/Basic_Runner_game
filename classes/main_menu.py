@@ -1,10 +1,9 @@
 import pygame
 from .level_loader import load_level_data
 
-
-def build_main_menu(screen, display_size, game_active, alpha_val=0):
+def build_main_menu(screen, game_active, alpha_val=0):
     # Create a transparent surface for the main menu
-    main_menu_surface = pygame.Surface(display_size, pygame.SRCALPHA)
+    main_menu_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     main_menu_surface_rect = main_menu_surface.get_rect()
     difficulty = "medium"
 
@@ -13,7 +12,7 @@ def build_main_menu(screen, display_size, game_active, alpha_val=0):
         try:
             start_menu_surf = pygame.image.load(
                 "./game_files/Stage_backgrounds/start_menu_background.png").convert_alpha()
-            start_menu_surf = pygame.transform.smoothscale(start_menu_surf, display_size)
+            start_menu_surf = pygame.transform.smoothscale(start_menu_surf, screen.get_size())
             start_menu_surf.set_alpha(alpha_val)
         except pygame.error as e:
             print(f"Error loading image: {e}")
@@ -29,7 +28,7 @@ def build_main_menu(screen, display_size, game_active, alpha_val=0):
         font = pygame.font.Font(None, 40)  # Default font
         message = font.render("Press SPACE to Start", True, (255, 255, 255))
         message.set_alpha(alpha_val)  # Set text alpha
-        message_rect = message.get_rect(center=(display_size[0] / 2, display_size[1] / 1.25))
+        message_rect = message.get_rect(center=(screen.get_size()[0] / 2, screen.get_size()[1] / 1.25))
 
         # Draw the combined surface to the screen
         main_menu_surface.blit(start_menu_surf, start_menu_rect)

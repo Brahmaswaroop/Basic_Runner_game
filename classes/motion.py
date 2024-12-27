@@ -6,7 +6,6 @@ class Motion:
         self.gravity_force = 0.7        # Gravity effect value
         self.speed = 0
         self.last_jump_time = 0
-
         self.screen = None
         self.rect = None
         self.ground = ground
@@ -28,7 +27,6 @@ class Motion:
             self.rect.bottom -= self.vertical_displacement
             self.last_jump_time = tm.time()
 
-
     def move_horizontal(self, direction, border=False):
         # To prevent the rect to go beyond the window border
         if border:
@@ -38,4 +36,3 @@ class Motion:
             self.rect.move_ip(-self.speed, 0)
         elif direction == "right":
             self.rect.move_ip(self.speed, 0)
-

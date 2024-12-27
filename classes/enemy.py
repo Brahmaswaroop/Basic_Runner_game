@@ -46,9 +46,6 @@ class EnemyProcessing:
         enemy_count = enemy_count_defined if enemy_count_defined else difficulty["enemy_count"]
 
         for enemy in range(enemy_count):
-            print(type(difficulty))  # Should be <class 'dict'>
-            print(difficulty)        # Confirm expected values
-
             ran_enemy_color = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
             enemy = _Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
