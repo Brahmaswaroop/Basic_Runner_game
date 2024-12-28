@@ -1,13 +1,20 @@
 import time as tm
+import pygame
 
 class Motion:
     def __init__(self, ground):
+        self.screen = None
+        self.image = None
+        self.surf = None
+        self.rect = None
+        self.character = None
+        self.char_sprites = None
+        self.sprite_index = None
+        self.direction = None
         self.vertical_displacement = 0  # For vertical (Y-axis) motion due to gravity or jump
         self.gravity_force = 0.7        # Gravity effect value
         self.speed = 0
         self.last_jump_time = 0
-        self.screen = None
-        self.rect = None
         self.ground = ground
 
     def apply_gravity(self):
@@ -36,3 +43,38 @@ class Motion:
             self.rect.move_ip(-self.speed, 0)
         elif direction == "right":
             self.rect.move_ip(self.speed, 0)
+
+    def animation(self, direction="stop"):
+        try:
+            if direction != "stop":
+                self.direction = direction
+            if self.sprite_index >= 3:
+                self.sprite_index = 0
+            if self.direction == "right" and direction != "stop":
+                if self.rect.bottom < self.ground:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[1]}"
+                else:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[int(self.sprite_index)]}"
+                self.surf = pygame.image.load(self.image).convert_alpha()
+                self.sprite_index += 0.1
+            elif self.direction == "left" and direction != "stop":
+                if self.rect.bottom < self.ground:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[1]}"
+                else:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[int(self.sprite_index)]}"
+                self.surf = pygame.image.load(self.image).convert_alpha()
+                self.surf = pygame.transform.flip(self.surf, True, False)
+                self.sprite_index += 0.1
+            elif direction == "stop":
+                if self.rect.bottom < self.ground:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[1]}"
+                else:
+                    self.image = f"game_files/Character_skins/{self.character}/{self.char_sprites[-1]}"
+                self.surf = pygame.image.load(self.image).convert_alpha()
+                if self.direction == "left":
+                    self.surf = pygame.transform.flip(self.surf, True, False)
+                self.sprite_index = 0
+            self.surf = pygame.transform.scale(self.surf, (100, 150))
+            self.draw()
+        except FileNotFoundError:
+            pass
