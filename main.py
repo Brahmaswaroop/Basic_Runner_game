@@ -62,6 +62,8 @@ while True:
         elif key_states[pygame.K_RIGHT]:
             player1.move_horizontal("right", border=True)
             player1.animation(direction="right")
+        else:
+            player1.animation()
 
     # Game over screen
     else:
