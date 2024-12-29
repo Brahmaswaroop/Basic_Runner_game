@@ -3,7 +3,8 @@ from classes.enemy import EnemyProcessing
 from classes.player import Player
 from classes.game_texts import disp_score, countdown_timer
 from classes.start_menu import build_main_menu
-from classes.level_loader import load_level_data
+from classes.data_loader import load_level_data
+from classes.items import FruitProcessing
 
 pygame.init()
 display_size = (1440, 720)
@@ -21,7 +22,7 @@ alpha_val = 0
 background_surf = pygame.image.load("game_files/Stage_backgrounds/back3.jpg").convert_alpha()
 player1 = Player(screen, ground, "Character1")
 enemy_processor = EnemyProcessing(screen, ground)
-enemies = enemy_processor.enemy_generator(load_level_data("easy"))
+fruit_list = []
 
 while True:
     # Event handling
@@ -34,6 +35,8 @@ while True:
     alpha_val, difficulty = build_main_menu(screen, game_active, alpha_val)
 
     if game_start:
+        player1.rect.midbottom = (display_size[0]/2, ground)
+        enemies = enemy_processor.enemy_generator(difficulty)
         # countdown_timer(screen, background_surf, 3)
         start_time = pygame.time.get_ticks()
         game_start = False
@@ -48,29 +51,29 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity()
+        # fruit_list.append(FruitProcessing(screen).fruit_generator(2))
+        # FruitProcessing(screen).fruit_falling(fruit_list)
         enemy_processor.enemy_movement(enemies, difficulty)
         game_active = enemy_processor.collision_detected(enemies, player1.rect)
-        disp_score(screen, start_time)
+        score = disp_score(screen, start_time)
 
     # Player controls when game is active
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:
             player1.jump()
-            player1.animation()
+            player1.moving_animation()
         elif key_states[pygame.K_LEFT]:
             player1.move_horizontal("left", border=True)
-            player1.animation(direction="left")
+            player1.moving_animation(direction="left")
         elif key_states[pygame.K_RIGHT]:
             player1.move_horizontal("right", border=True)
-            player1.animation(direction="right")
+            player1.moving_animation(direction="right")
         else:
-            player1.animation()
+            player1.moving_animation()
 
     # Game over screen
     else:
-        if key_states[pygame.K_SPACE]:
+        if key_states[pygame.K_RETURN]:
             game_active = game_start = True
-            player1.rect.midbottom = (display_size[0]/2, ground)
-            enemies = enemy_processor.enemy_generator(difficulty)
 
     pygame.display.update()
     clock.tick(60)

@@ -1,0 +1,54 @@
+{
+  "levels": {
+    "easy": {
+      "enemy_max_speed": 8,
+      "enemy_spec_incrementer": 1,
+      "enemy_jump_strength": 5,
+      "enemy_jump_rate": 3,
+      "enemy_count": 1
+    },
+    "medium": {
+      "enemy_max_speed": 13,
+      "enemy_spec_incrementer": 2,
+      "enemy_jump_strength": 10,
+      "enemy_jump_rate": 2,
+      "enemy_count": 1
+    },
+    "hard": {
+      "enemy_max_speed": 18,
+      "enemy_spec_incrementer": 3,
+      "enemy_jump_strength": 15,
+      "enemy_jump_rate": 1,
+      "enemy_count": 2
+    },
+    "impossible": {
+      "enemy_max_speed": 21,
+      "enemy_spec_incrementer": 4,
+      "enemy_jump_strength": 20,
+      "enemy_jump_rate": 1,
+      "enemy_count": 3
+    }
+  },
+  "fruits": {
+    "apple": {
+      "value": 10,
+      "fall_rate": 3,
+      "image": "game_files/Items/Fruits/fruit_apple.png"
+    },
+    "orange": {
+      "value": 20,
+      "fall_rate": 4,
+      "image": "game_files/Items/Fruits/fruit_orange.png"
+    },
+    "grape": {
+      "value": 50,
+      "fall_rate": 5,
+      "image": "game_files/Items/Fruits/fruit_grape.png"
+    },
+    "cherry": {
+      "value": 100,
+      "fall_rate": 6,
+      "image": "game_files/Items/Fruits/fruit_cherry.png"
+    }
+  }
+}

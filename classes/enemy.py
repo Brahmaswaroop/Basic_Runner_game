@@ -1,19 +1,30 @@
 """
 This module is associated with the enemy of the game.
-It includes:
 
-Enemy sprite creation is done using the Enemy class.
+Features:
+1. Enemy sprite creation handled by the Enemy class.
+2. EnemyProcessing class provides:
+   - Enemy generator to spawn a specified number of enemies.
+   - Movement and behavior control for enemies, including gravity and jumping.
+   - Collision detection to check interactions with the player.
+   - Recycling mechanism to reuse enemies moving out of bounds.
 
-Enemy processing class have functions to interact with the enemy rect like:
-Enemy generator to generate n number of enemies.
-Enemy Movement is used to make the rect move.
+Classes:
+1. Enemy: Defines individual enemy attributes and rendering.
+2. EnemyProcessing: Manages enemy creation, movement, and interactions.
+
+Dependencies:
+- pygame
+- random
+- motion (local module)
 """
+
 
 import pygame
 import random
 from .motion import Motion
 
-class _Enemy(Motion):
+class Enemy(Motion):
     def __init__(self, screen, color, spawn_position: tuple):
         super().__init__(spawn_position[1])
         self.screen = screen
@@ -27,11 +38,11 @@ class _Enemy(Motion):
         except FileNotFoundError:
             self.surf = pygame.Surface((50, 50))
             self.surf.fill(color)
+
         self.rect = self.surf.get_rect(midbottom=(self.default_pos[0], self.default_pos[1]))
 
     def draw(self):
         self.screen.blit(self.surf, self.rect)
-
 
 class EnemyProcessing:
     def __init__(self, screen, ground_pos):
@@ -48,12 +59,15 @@ class EnemyProcessing:
         for enemy in range(enemy_count):
             ran_enemy_color = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
-            enemy = _Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
+            enemy = Enemy(self.screen, ran_enemy_color, (ran_enemy_direction[0], self.ground_pos))
+
             enemy.direction = ran_enemy_direction[1]
             enemy.speed = random.randint(int(difficulty['enemy_max_speed'])-5, difficulty["enemy_max_speed"])
             enemy.jump_strength = random.randint(difficulty["enemy_jump_strength"]-5, difficulty[
                 "enemy_jump_strength"])
-            enemy.jump_interval = random.uniform(1, difficulty["enemy_jump_rate"])
+            enemy.jump_interval = random.uniform(0, difficulty["enemy_jump_rate"])
+            enemy.jump_timer = pygame.USEREVENT + 1
+            pygame.time.set_timer(enemy.jump_timer, int(enemy.jump_interval * 500))
             enemy_list.append(enemy)
         return enemy_list
 
@@ -76,9 +90,10 @@ class EnemyProcessing:
 
         """
         Processes enemy movement and recycling.
-        
+
         Args:
-            enemies (list): List of active enemy objects.
+            :param enemies:
+            :param difficulty:
 
         """
         remaining_enemies = []  # To track enemies still on-screen
@@ -87,7 +102,9 @@ class EnemyProcessing:
             # Enemy actions: movement, gravity, jumping
             enemy.move_horizontal(enemy.direction)
             enemy.apply_gravity()
-            enemy.jump(interval=enemy.jump_interval, jump_height=enemy.jump_strength)
+            for event in pygame.event.get():
+                if event.type == enemy.jump_timer:
+                    enemy.jump(jump_height=enemy.jump_strength)
             enemy.draw()
 
             # Recycle enemy if it leaves the screen; otherwise, keep it

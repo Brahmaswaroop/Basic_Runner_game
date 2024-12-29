@@ -1,11 +1,11 @@
 import pygame
-from .level_loader import load_level_data
+from .data_loader import load_level_data
 
 def build_main_menu(screen, game_active, alpha_val=0):
     # Create a transparent surface for the main menu
     main_menu_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     main_menu_surface_rect = main_menu_surface.get_rect()
-    difficulty = "medium"
+    difficulty = "impossible"
 
     if not game_active:
         # Load player sprite with error handling

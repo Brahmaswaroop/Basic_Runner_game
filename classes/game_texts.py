@@ -1,14 +1,16 @@
 import pygame
 import time
 
-def disp_score(screen, start_time):
+def disp_score(screen, start_time, bonus=0):
     # To show the score
-    st_time = pygame.time.get_ticks() - start_time
+    time_score = pygame.time.get_ticks() - start_time
+    score = time_score//1000 + bonus
     score_font = pygame.font.Font(None, 50)
-    score_surf = score_font.render(f"Score: {st_time//1000}", False, (64, 64, 64))
+    score_surf = score_font.render(f"Score: {score}", False, (64, 64, 64))
     score_rect = score_surf.get_rect(center=(400, 50))
     pygame.draw.rect(screen, (0, 230, 250), score_rect, 0)
     screen.blit(score_surf, score_rect)
+    return score
 
 def countdown_timer(screen, background_surf, countdown_time):
     count_font = pygame.font.Font(None, 150)
