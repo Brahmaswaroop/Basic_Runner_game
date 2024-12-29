@@ -15,18 +15,18 @@
       "enemy_count": 1
     },
     "hard": {
-      "enemy_max_speed": 18,
-      "enemy_spec_incrementer": 3,
+      "enemy_max_speed": 13,
+      "enemy_spec_incrementer": 2,
       "enemy_jump_strength": 15,
-      "enemy_jump_rate": 1,
+      "enemy_jump_rate": 2,
       "enemy_count": 2
     },
     "impossible": {
-      "enemy_max_speed": 21,
-      "enemy_spec_incrementer": 4,
+      "enemy_max_speed": 18,
+      "enemy_spec_incrementer": 3,
       "enemy_jump_strength": 20,
       "enemy_jump_rate": 1,
-      "enemy_count": 3
+      "enemy_count": 2
     }
   },
   "fruits": {

@@ -5,7 +5,7 @@ def build_main_menu(screen, game_active, alpha_val=0):
     # Create a transparent surface for the main menu
     main_menu_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     main_menu_surface_rect = main_menu_surface.get_rect()
-    difficulty = "impossible"
+    difficulty = "hard"
 
     if not game_active:
         # Load player sprite with error handling

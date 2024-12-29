@@ -6,7 +6,7 @@ class Player(Motion):
     def __init__(self, screen, ground, character: str):
         super().__init__(ground)
         self.direction = None
-        self.speed = 6
+        self.speed = 8
         self.sprite_index = 0
         self.character = character
         self.char_sprites = os.listdir(f"game_files/Character_skins/{character}")

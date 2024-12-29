@@ -3,7 +3,6 @@ from classes.enemy import EnemyProcessing
 from classes.player import Player
 from classes.game_texts import disp_score, countdown_timer
 from classes.start_menu import build_main_menu
-from classes.data_loader import load_level_data
 from classes.items import FruitProcessing
 
 pygame.init()
@@ -22,7 +21,7 @@ alpha_val = 0
 background_surf = pygame.image.load("game_files/Stage_backgrounds/back3.jpg").convert_alpha()
 player1 = Player(screen, ground, "Character1")
 enemy_processor = EnemyProcessing(screen, ground)
-fruit_list = []
+fruit_processor = FruitProcessing(screen)
 
 while True:
     # Event handling
@@ -35,8 +34,10 @@ while True:
     alpha_val, difficulty = build_main_menu(screen, game_active, alpha_val)
 
     if game_start:
+        bonus_score = 0
         player1.rect.midbottom = (display_size[0]/2, ground)
         enemies = enemy_processor.enemy_generator(difficulty)
+        fruit_list = fruit_processor.fruit_generator()
         # countdown_timer(screen, background_surf, 3)
         start_time = pygame.time.get_ticks()
         game_start = False
@@ -51,11 +52,11 @@ while True:
         screen.blit(background_surf, (0, 0))
         player1.draw()
         player1.apply_gravity()
-        # fruit_list.append(FruitProcessing(screen).fruit_generator(2))
-        # FruitProcessing(screen).fruit_falling(fruit_list)
+        fruit_processor.fruit_falling(fruit_list)
         enemy_processor.enemy_movement(enemies, difficulty)
         game_active = enemy_processor.collision_detected(enemies, player1.rect)
-        score = disp_score(screen, start_time)
+        bonus_score += fruit_processor.fruit_score(fruit_list, player1.rect)
+        score = disp_score(screen, start_time, bonus_score)
 
     # Player controls when game is active
         if key_states[pygame.K_SPACE] or key_states[pygame.K_UP]:

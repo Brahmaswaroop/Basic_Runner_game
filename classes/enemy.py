@@ -19,7 +19,6 @@ Dependencies:
 - motion (local module)
 """
 
-
 import pygame
 import random
 from .motion import Motion
