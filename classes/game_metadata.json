@@ -50,5 +50,13 @@
       "fall_rate": 6,
       "image": "game_files/Items/Fruits/fruit_cherry.png"
     }
+  },
+  "enemy_skins": {
+    "dog_1": {
+      "image": "game_files/Enemy_skins/Dog_1"
+    },
+    "bird_1": {
+      "image": "game_files/Enemy_skins/Bird_1"
+    }
   }
 }

@@ -10,3 +10,8 @@ def load_fruit_data():
     file = open("classes/game_metadata.json", 'r')
     data = json.load(file)
     return data["fruits"]
+
+def load_enemy_data(name):
+    file = open("classes/game_metadata.json", 'r')
+    data = json.load(file)
+    return data["enemies"][name]

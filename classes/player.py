@@ -9,15 +9,16 @@ class Player(Motion):
         self.speed = 8
         self.sprite_index = 0
         self.character = character
+        self.size = (100, 150)
         self.char_sprites = os.listdir(f"game_files/Character_skins/{character}")
         self.screen = screen
         try:
             self.image = f"game_files/Character_skins/{character}/{self.char_sprites[-1]}"
             self.surf = pygame.image.load(self.image).convert_alpha()
+            self.surf = pygame.transform.smoothscale(self.surf, self.size)
         except FileNotFoundError:
-            self.surf = pygame.Surface((100, 100))
+            self.surf = pygame.Surface(self.size)
             self.surf.fill("black")
-        self.surf = pygame.transform.scale(self.surf, (100, 150))
         self.rect = self.surf.get_rect(midbottom=(screen.get_size()[0]/2, ground))
 
     def draw(self):
