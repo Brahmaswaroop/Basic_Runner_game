@@ -7,6 +7,7 @@ class Player(Motion):
         super().__init__(ground)
         self.direction = None
         self.speed = 8
+        self.default_pos = (screen.get_size()[0]/2, ground)
         self.sprite_index = 0
         self.character = character
         self.size = (100, 150)
@@ -19,7 +20,7 @@ class Player(Motion):
         except FileNotFoundError:
             self.surf = pygame.Surface(self.size)
             self.surf.fill("black")
-        self.rect = self.surf.get_rect(midbottom=(screen.get_size()[0]/2, ground))
+        self.rect = self.surf.get_rect(midbottom=self.default_pos)
 
     def draw(self):
         self.screen.blit(self.surf, self.rect)

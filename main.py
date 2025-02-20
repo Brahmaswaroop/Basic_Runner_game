@@ -13,8 +13,8 @@ clock = pygame.time.Clock()
 
 ground = 520
 start_time = pygame.time.get_ticks()
-game_active = False
 game_start = False
+game_active = False
 game_paused = False
 alpha_val = 0
 
@@ -31,7 +31,7 @@ while True:
             exit()
 
     key_states = pygame.key.get_pressed()
-    alpha_val, difficulty = build_main_menu(screen, game_active, alpha_val)
+    alpha_val, difficulty = build_main_menu(screen, game_start, alpha_val)
 
     if game_start:
         bonus_score = 0

@@ -56,6 +56,7 @@ class Enemy(Motion):
 
 class EnemyProcessing:
     def __init__(self, screen, ground_pos):
+        self.entity = None
         self.screen = screen
         self.display_size = screen.get_size()
         self.ground_pos = ground_pos
@@ -67,22 +68,24 @@ class EnemyProcessing:
         enemy_count = enemy_count_defined if enemy_count_defined else difficulty["enemy_count"]
 
         for enemy in range(enemy_count):
-            character = random.choice(enemy_skins)
+            self.entity = random.choice(enemy_skins)
             ran_enemy_direction = random.choice(enemy_pos_direction)
-            if 'bird' in character:
-                ran_enemy_pos = random.randint(200, self.ground_pos-60)
-                enemy = Enemy(self.screen, character, (ran_enemy_direction[0], ran_enemy_pos))
+            if 'bird' in self.entity:
+                ran_enemy_pos = random.randint(200, self.ground_pos-150)
+                enemy = Enemy(self.screen, self.entity, (ran_enemy_direction[0], ran_enemy_pos))
                 enemy.jump_strength = -(random.randint(difficulty["enemy_jump_strength"]-5, difficulty[
                     "enemy_jump_strength"]))
             else:
-                enemy = Enemy(self.screen, character, (ran_enemy_direction[0], self.ground_pos))
+                enemy = Enemy(self.screen, self.entity,(ran_enemy_direction[0], self.ground_pos))
+                enemy.jump_strength = random.randint(difficulty["enemy_jump_strength"]-5, difficulty[
+                    "enemy_jump_strength"])
 
             enemy.direction = ran_enemy_direction[1]
             enemy.speed = random.randint(int(difficulty['enemy_max_speed'])-5, difficulty["enemy_max_speed"])
 
             enemy.jump_interval = random.uniform(0, difficulty["enemy_jump_rate"])
             enemy.jump_timer = pygame.USEREVENT + 1
-            pygame.time.set_timer(enemy.jump_timer, int(enemy.jump_interval * 10000))
+            pygame.time.set_timer(enemy.jump_timer, int(enemy.jump_interval * 100))
             enemy_list.append(enemy)
         return enemy_list
 
@@ -121,7 +124,10 @@ class EnemyProcessing:
                 if event.type == enemy.jump_timer:
                     enemy.jump(jump_height=enemy.jump_strength)
 
-            enemy.apply_gravity()
+            if 'bird' in self.entity:
+                enemy.apply_gravity(True)
+            else:
+                enemy.apply_gravity()
             enemy.draw()
 
             # Recycle enemy if it leaves the screen; otherwise, keep it

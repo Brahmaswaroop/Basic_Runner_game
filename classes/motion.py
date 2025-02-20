@@ -4,6 +4,7 @@ import pygame
 
 class Motion:
     def __init__(self, ground):
+        self.default_pos = None
         self.screen = None
         self.image = None
         self.surf = None
@@ -20,15 +21,23 @@ class Motion:
         self.last_jump_time = 0
         self.ground = ground
 
-    def apply_gravity(self):
+    def apply_gravity(self, is_bird=False):
+        if is_bird:
+            if self.rect.bottom > self.default_pos[1]:
+                self.vertical_displacement += self.gravity_force
+                self.rect.bottom += self.vertical_displacement
+            else:
+                self.rect.bottom = self.default_pos[1]
+                self.vertical_displacement = 0
         # Apply gravity effect on vertical displacement if player is in air
-        if self.rect.bottom < self.ground:
-            self.vertical_displacement -= self.gravity_force
-            self.rect.bottom -= self.vertical_displacement
-        # Ensure the player does not fall below ground level
         else:
-            self.rect.bottom = self.ground
-            self.vertical_displacement = 0
+            if self.rect.bottom < self.default_pos[1]:
+                self.vertical_displacement -= self.gravity_force
+                self.rect.bottom -= self.vertical_displacement
+            # Ensure the player does not fall below ground level
+            else:
+                self.rect.bottom = self.default_pos[1]
+                self.vertical_displacement = 0
 
     def jump(self, interval=0, jump_height=16):
         # Check if player is on the ground and can jump
@@ -38,10 +47,9 @@ class Motion:
                 self.rect.bottom -= self.vertical_displacement
                 self.last_jump_time = tm.time()
         else:
-            if tm.time() - self.last_jump_time >= interval:
+            if self.rect.bottom == self.default_pos[1]:
                 self.vertical_displacement = jump_height
                 self.rect.bottom -= self.vertical_displacement
-                self.last_jump_time = tm.time()
 
     def move_horizontal(self, direction, border=False):
         # To prevent the rect to go beyond the window border
